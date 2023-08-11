@@ -1,0 +1,69 @@
+#!/bin/bash
+
+SNP_CHR=$1
+SNP_LOCATION=$2
+#PROJECT_FOLDER=${3:-"default_project"}
+PROJECT_FOLDER=$3
+SPECIES=$4
+LD_VALUE=${5:-.01}
+
+#echo $SPECIES 
+BASE_DIR="/shares/tmockler_share/private/Data/G2g/${SPECIES}"
+CURRENT_DIR=$PWD
+
+echo "$SNP_CHR"
+echo "$SNP_LOCATION"
+echo "$SPECIES"
+echo "$PROJECT_FOLDER"
+echo "$CURRENT_DIR"
+
+##Make folders
+mkdir -p ${CURRENT_DIR}/${PROJECT_FOLDER}/
+mkdir -p ${CURRENT_DIR}/${PROJECT_FOLDER}/regions
+
+##Create region files through regions
+echo "Chr	Snp" > ${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_snp_of_interest.temp
+echo "$SNP_CHR	$SNP_LOCATION" >> ${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_snp_of_interest.temp
+
+
+##Create large window based of SNP position
+SNP_TEMP_REGION_START=$((SNP_LOCATION-300000))
+SNP_TEMP_REGION_STOP=$((SNP_LOCATION+300000))
+
+if (( ${SNP_TEMP_REGION_START} < 1 )); then
+	SNP_TEMP_REGION_START=1
+fi
+
+if [[ "$SPECIES" = "Setaria" ]];
+then
+##CREATE A TEMPORARY VCF TO LOOK FOR LOCAL LD
+tabix -h ${BASE_DIR}/resources/Setaria_viridis_VCF_files/Setaria_viridis_1.1.snpEff.vcf.gz ${SNP_CHR}:${SNP_TEMP_REGION_START}-${SNP_TEMP_REGION_STOP} > ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_temp_region.vcf;
+elif [[ "$SPECIES" = "Sbicolor" ]];
+then
+##CREATE A TEMPORARY VCF TO LOOK FOR LOCAL LD
+(tabix -h ${BASE_DIR}/resources/BAP_vcf_files/TERRA_final_${SNP_CHR}.snpEff.vcf.gz ${SNP_CHR}:${SNP_TEMP_REGION_START}-${SNP_TEMP_REGION_STOP} > ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_temp_region.vcf);
+elif [[ "$SPECIES" = "Zmays" ]];
+then
+##CREATE A TEMPORARY VCF TO LOOK FOR LOCAL LD
+tabix -h ${BASE_DIR}/resources/Zmays/snpeff_vcfs/hmp321_agpv4_${SNP_CHR}.snpeff.vcf.gz ${SNP_CHR}:${SNP_TEMP_REGION_START}-${SNP_TEMP_REGION_STOP} > ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_temp_region.vcf;
+fi
+
+##CALCULATE LD FOR REGION
+vcftools --vcf $PROJECT_FOLDER/${SNP_CHR}_${SNP_LOCATION}_temp_region.vcf --geno-r2-positions $PROJECT_FOLDER/${SNP_CHR}_${SNP_LOCATION}_snp_of_interest.temp --ld-window 500 --out $PROJECT_FOLDER/${SNP_CHR}_${SNP_LOCATION}_SNP_LD
+clear
+##Remove SNPs that have LD > LD_VALUE, remove errored SNPs, remove header, Sort based on position and output to temp file
+
+awk -v LD_VAR="$LD_VALUE" '{ if ( $6 >= LD_VAR ) {print} }' ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld | grep -v "nan" | grep -v 'N_INDV' | sort  -k4,4n > ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld.sorted.temp
+
+REGION_CHROM=$( awk 'NR==1{print $3}' ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld.sorted.temp )
+REGION_START=$( awk 'NR==1{print $4}' ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld.sorted.temp )
+REGION_STOP=$( tail ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld.sorted.temp | awk 'NR==1{print $4}' - )
+
+echo "$REGION_CHROM $REGION_START $REGION_STOP" > ${CURRENT_DIR}/${PROJECT_FOLDER}/regions/${SNP_CHR}_${SNP_LOCATION}.region
+
+#CLEAN UP
+rm ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_temp_region.vcf
+rm ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_snp_of_interest.temp
+rm ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld.sorted.temp
+rm ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld
+
