@@ -14,6 +14,8 @@ done
 #PHENO=$2
 #PROJECT_NAME=${3:-"default_project"}
 #JOBS=${4:-4}
+
+# Comments by Rijan: The following lines simply re-iterate the variables and does nothing else. This is useless.
 echo "${SPECIES}"
 echo "${PHENO}"
 echo "${INPUT_FILE}"
@@ -35,9 +37,9 @@ echo "You did not input the species correctly." && exit 0;
 fi
 
 
-
-BASE_DIR="/shares/tmockler_share/private/Data/G2g/${SPECIES}"
-PROGRAM_DIR="/shares/tmockler_share/private/Data/G2g/universal_species"
+# The following lines make no sense whatsoever from a design perspective. These are hardlinked paths that should not be here.
+BASE_DIR="~/panvar/${SPECIES}"
+PROGRAM_DIR="~/panvar/universal_species"
 CURRENT_DIR=$PWD
 
 
@@ -49,7 +51,7 @@ wait
 Rscript ${PROGRAM_DIR}/scripts/2.gene_region_to_gene_lists_${SPECIES}.R ${PROJECT_NAME} --save
 
 ##Clean up outputs
-sed -i 's/"//g' ${CURRENT_DIR}/${PROJECT_NAME}/working/gene_lists_only_by_region/*.region
+sed -i 's/"g' ${CURRENT_DIR}/${PROJECT_NAME}/working/gene_lists_only_by_region/*.region # these region files are made by the rscript above.
 
 
 ##launch gene finders

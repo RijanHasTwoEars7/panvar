@@ -8,7 +8,7 @@ SPECIES=$4
 LD_VALUE=${5:-.01}
 
 echo $SPECIES 
-BASE_DIR="/shares/tmockler_share/private/Data/G2g/${SPECIES}"
+BASE_DIR="~/panvar/${SPECIES}"
 CURRENT_DIR=$PWD
 
 echo "$SNP_CHR"
@@ -55,12 +55,15 @@ clear
 
 awk -v LD_VAR="$LD_VALUE" '{ if ( $6 >= LD_VAR ) {print} }' ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld | grep -v "nan" | grep -v 'N_INDV' | sort  -k4,4n > ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld.sorted.temp
 
+## Comments by Rijan: The region files are what are fed into the 2.Rscript and contain the regions of interest per file.
+
 REGION_CHROM=$( awk 'NR==1{print $3}' ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld.sorted.temp )
 REGION_START=$( awk 'NR==1{print $4}' ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld.sorted.temp )
 REGION_STOP=$( tail ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld.sorted.temp | awk 'NR==1{print $4}' - )
 
-echo "$REGION_CHROM $REGION_START $REGION_STOP" > ${CURRENT_DIR}/${PROJECT_FOLDER}/regions/${SNP_CHR}_${SNP_LOCATION}.region
+echo "$REGION_CHROM $REGION_START $REGION_STOP" > ${CURRENT_DIR}/${PROJECT_FOLDER}/regions/${SNP_CHR}_${SNP_LOCATION}.region # Comments by Rijan: The previous guy is using echo to write to file instead of something like sed or cat 
 
+# Comments by Rijan: These just remove the "transient" folders.
 #CLEAN UP
 rm ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_temp_region.vcf
 rm ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_snp_of_interest.temp
