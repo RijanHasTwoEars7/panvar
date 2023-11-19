@@ -64,3 +64,4 @@ output_base_name="${base_name}_${snp_start_ld}_${snp_stop_ld}.txt"
 output_path="${output_path}/${output_base_name}"
 
 tabix ${vcf_file} ${chromosome}:${snp_start_ld}-${snp_stop_ld} > ${output_path}
+
