@@ -55,7 +55,7 @@ snp_stop_ld=$((distance+500000))
 
 if (( ${snp_start_ld} < 1)); then
     snp_start_ld=0
-    echo "the given distance was too close to the start and needed to be reset to 1"    
+    echo "the given distance was too close to the start and needed to be reset to 0"    
 fi
 
 # generate a base name for the output file using the base name of the input file and the ld range
@@ -63,4 +63,4 @@ output_base_name="${base_name}_${snp_start_ld}_${snp_stop_ld}.txt"
 
 output_path="${output_path}/${output_base_name}"
 
-tabix $vcf_file $chromosome:$snp_start_ld-$snp_stop_ld > $output_path
+tabix ${vcf_file} ${chromosome}:${snp_start_ld}-${snp_stop_ld} > ${output_path}
