@@ -36,7 +36,7 @@ while test $# -gt 0; do
         ;;
     --distance) # this should be the ld distance that is calculated
         shift
-        output=$1
+        distance=$1
         shift
         ;;
   esac
@@ -63,5 +63,5 @@ output_base_name="${base_name}_${snp_start_ld}_${snp_stop_ld}.txt"
 
 output_path="${output}/${output_base_name}"
 
-tabix ${vcf_file} ${chromosome}:${snp_start_ld}-${snp_stop_ld} > ${output_path}
+tabix -h ${vcf_file} ${chromosome}:${snp_start_ld}-${snp_stop_ld} > ${output_path}
 
