@@ -59,7 +59,7 @@ awk -v LD_VAR="$LD_VALUE" '{ if ( $6 >= LD_VAR ) {print} }' ${CURRENT_DIR}/${PRO
 
 REGION_CHROM=$( awk 'NR==1{print $3}' ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld.sorted.temp )
 REGION_START=$( awk 'NR==1{print $4}' ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld.sorted.temp )
-REGION_STOP=$( tail ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld.sorted.temp | awk 'NR==1{print $4}' - )
+REGION_STOP=$( tail ${CURRENT_DIR}/${PROJECT_FOLDER}/${SNP_CHR}_${SNP_LOCATION}_SNP_LD.list.geno.ld.sorted.temp | awk 'NR==1{print $4}' - ) # this has a serious error, this is grabbbing the 5th to the last line and not the last line which seems to be the intention.
 
 echo "$REGION_CHROM $REGION_START $REGION_STOP" > ${CURRENT_DIR}/${PROJECT_FOLDER}/regions/${SNP_CHR}_${SNP_LOCATION}.region # Comments by Rijan: The previous guy is using echo to write to file instead of something like sed or cat 
 
