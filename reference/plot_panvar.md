@@ -244,7 +244,7 @@ tables <- make_panvar_tables(
   compute.scores = FALSE,
   snp.to.gene.buffer = 0)
 #> Calculating LD
-#> Generating snp to gene correspondence
+#> Warning: No SNPs found close to the provided tag snp or qtl.df SNPs. Maybe increase window or check gwas results table.
   
 # make plot
 plot_panvar(
@@ -254,7 +254,7 @@ plot_panvar(
   sig.line = 6)
 #> Making manhattan
 #> Making annotation plot
-
+#> Error in plot_panvar(panvar.table.list = tables, pvals.in.log = FALSE,     window = 25, sig.line = 6): annotation.point.variable: LD not found in panvar.table.list$anno
   
 # clean up 
 unlink(temp.dir, recursive = TRUE)

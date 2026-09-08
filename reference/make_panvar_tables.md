@@ -180,33 +180,36 @@ tables <- make_panvar_tables(
   compute.scores = FALSE,
   snp.to.gene.buffer = 0)
 #> Calculating LD
-#> Generating snp to gene correspondence
+#> Warning: No SNPs found close to the provided tag snp or qtl.df SNPs. Maybe increase window or check gwas results table.
 
 # snp level results
 head(tables$gwas)
-#> # A tibble: 6 × 12
-#> # Rowwise: 
-#>   marker.ID   CHR     POS A1    A2      MAF   EFF    SE     PVAL LOGPVAL     LD
-#>   <chr>     <dbl>   <dbl> <chr> <chr> <dbl> <dbl> <dbl>    <dbl>   <dbl>  <dbl>
-#> 1 5-6833177     5 6833177 G     A     0.267 1.11  0.145 6.98e-13  12.2   0.923 
-#> 2 5-6833238     5 6833238 A     G     0.314 0.769 0.118 5.58e-10   9.25  0.716 
-#> 3 5-6833253     5 6833253 C     T     0.230 0.816 0.128 1.24e- 9   8.90  0.0762
-#> 4 5-6834607     5 6834607 C     T     0.423 0.757 0.258 3.76e- 3   2.42  0.278 
-#> 5 5-6834854     5 6834854 G     A     0.472 0.202 0.202 3.19e- 1   0.496 0.321 
-#> 6 5-6835212     5 6835212 C     T     0.402 1.26  0.302 4.46e- 5   4.35  0.268 
-#> # ℹ 1 more variable: genes_near_snp <chr>
+#>   marker.ID CHR     POS A1 A2       MAF       EFF        SE         PVAL
+#> 1 5-6833177   5 6833177  G  A 0.2674419 1.1088102 0.1449118 6.975650e-13
+#> 2 5-6833238   5 6833238  A  G 0.3139535 0.7688717 0.1182201 5.582764e-10
+#> 3 5-6833253   5 6833253  C  T 0.2302326 0.8164636 0.1284159 1.244639e-09
+#> 4 5-6834607   5 6834607  C  T 0.4232558 0.7573602 0.2584663 3.760119e-03
+#> 5 5-6834854   5 6834854  G  A 0.4720930 0.2020393 0.2023104 3.191033e-01
+#> 6 5-6835212   5 6835212  C  T 0.4023256 1.2573160 0.3015772 4.463099e-05
+#>      LOGPVAL        LD
+#> 1 12.1564153 0.9228230
+#> 2  9.2531507 0.7155770
+#> 3  8.9049566 0.0761779
+#> 4  2.4247985 0.2776270
+#> 5  0.4960687 0.3209310
+#> 6  4.3503635 0.2678820
 # gene level results
 head(tables$anno)
-#> # A tibble: 6 × 7
+#> # A tibble: 6 × 6
 #> # Rowwise: 
-#>     CHR geneID           start     end annotation          dist.from.snp      LD
-#>   <int> <chr>            <int>   <int> <chr>                       <dbl>   <dbl>
-#> 1     5 Sevir.5G085300 6829932 6832531 (1 of 2) PTHR20961…         24514 NA     
-#> 2     5 Sevir.5G085350 6837639 6838969 No gene descriptio…         18076  0.953 
-#> 3     5 Sevir.5G085800 6867108 6873803 (1 of 1) KOG4467 -…         10063  0.429 
-#> 4     5 Sevir.5G085400 6847970 6850236 (1 of 1) PTHR10641…          6809  0.0960
-#> 5     5 Sevir.5G085700 6866196 6868255 (1 of 1) PTHR34543…          9151  0.0471
-#> 6     5 Sevir.5G085500 6859612 6862290 (1 of 2) PTHR33146…          2567  0.119 
+#>     CHR geneID           start     end annotation                  dist.from.snp
+#>   <int> <chr>            <int>   <int> <chr>                               <dbl>
+#> 1     5 Sevir.5G085300 6829932 6832531 (1 of 2) PTHR20961//PTHR20…         24514
+#> 2     5 Sevir.5G085350 6837639 6838969 No gene description.                18076
+#> 3     5 Sevir.5G085800 6867108 6873803 (1 of 1) KOG4467 - Unchara…         10063
+#> 4     5 Sevir.5G085400 6847970 6850236 (1 of 1) PTHR10641//PTHR10…          6809
+#> 5     5 Sevir.5G085700 6866196 6868255 (1 of 1) PTHR34543//PTHR34…          9151
+#> 6     5 Sevir.5G085500 6859612 6862290 (1 of 2) PTHR33146:SF2 - E…          2567
 
 # clean up
 unlink(temp.dir, recursive = TRUE)

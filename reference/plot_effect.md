@@ -196,7 +196,7 @@ tables <- make_panvar_tables(
   compute.scores = FALSE,
   snp.to.gene.buffer = 0)
 #> Calculating LD
-#> Generating snp to gene correspondence
+#> Warning: No SNPs found close to the provided tag snp or qtl.df SNPs. Maybe increase window or check gwas results table.
   
 # make plot
 plot_effect(
