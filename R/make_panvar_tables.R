@@ -297,6 +297,17 @@ make_panvar_tables <- function(gwas.res,
     mutate(snp.in.gene = paste0(.data$snp.in.gene_list, collapse = "|")) 
   
   if(!is.null(snp.to.gene.vars)){
+    # deal with special "LOGPVAL" case
+    if("LOGPVAL" %in% snp.to.gene.vars){
+      if(pvals.in.log){
+        gwas.sub_with.genes <- gwas.sub_with.genes %>% 
+          mutate(LOGPVAL = PVAL)
+      } else {
+        gwas.sub_with.genes <- gwas.sub_with.genes %>% 
+          mutate(LOGPVAL = -log10(PVAL))
+      }
+    }
+    
     # get the snp to gene correspondence for whatever you want
     point.color.stat <- gwas.sub_with.genes %>% 
       filter(!is.null(.data$snp.in.gene_list)) %>% 
