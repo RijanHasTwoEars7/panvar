@@ -72,3 +72,33 @@ plot_panvar(panvar.res,
             snp.highlight.shape.scale = trial.scale,
             snp.highlight.color.var = "trait_only",
             snp.highlight.color.scale = khroma::scale_color_bright())
+
+
+# ------------------------------------------------------------------------\
+# other error  --------
+# ------------------------------------------------------------------------\
+
+library(tidyverse)
+
+clump.glm.res <- read.csv("C:/Users/cluebbert/OneDrive - DDPSC/~Rprojects~/PGRP_both_pops/results_gwas/testing/test_zea/ZeaPanvarTest_glm.res.csv")
+this.clump <- read.csv("C:/Users/cluebbert/OneDrive - DDPSC/~Rprojects~/PGRP_both_pops/results_gwas/testing/test_zea/ZeaPanvarTest_qtl.df.csv")
+# annotation.table <- read.csv("C:/Users/cluebbert/OneDrive - DDPSC/~Rprojects~/PGRP_both_pops/results_gwas/testing/test_zea/ZeaPanvarTest_anno.csv")%>% 
+#   mutate(annotation = case_when(GeneNameShort != "N/A" ~ paste0(GeneNameShort, ", ", Description),
+#                                 TRUE ~ Description)) %>% 
+#   mutate(CHR = as.numeric(CHROM)) %>% 
+#   rename(geneID = GeneID)
+annotation.table <- read.csv("C:/Users/cluebbert/OneDrive - DDPSC/~Rprojects~/PGRP_both_pops/results_gwas/testing/test_zea/ZeaPanvarTest_anno.csv")
+
+# clump.glm.res <- clump.glm.res %>% 
+#   rename(EFF = Effect)
+# this.clump <- this.clump %>% 
+#   rename(EFF = Effect)
+
+panvar.res <-
+  panvaR::make_panvar_tables(gwas.res = clump.glm.res,
+                             qtl.df = this.clump,
+                             pvals.in.log = F,
+                             annotation.table = annotation.table,
+                             geno.bed.filename = "1.Zea_biallelicAug2026_filtered_maf0.05.maxMissing0.1_fixnames",
+                             geno.bed.directory = "C:/Users/cluebbert/OneDrive - DDPSC/~Rprojects~/PGRP_both_pops/results_gwas/testing/test_zea",
+                             window = 500)

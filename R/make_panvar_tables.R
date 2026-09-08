@@ -175,6 +175,54 @@ make_panvar_tables <- function(gwas.res,
     
   }
   
+  # ------------------------------------------------------------------------\
+  # subset annotation --------
+  # ------------------------------------------------------------------------\
+  
+  # make sure annotation table chromosome column is numeric
+  if(!is.numeric(annotation.table$CHR)){
+    stop("Annotation table column 'CHR' must be numeric.")
+  }
+  
+  # filter anno to just window
+  # for one key snp
+  if(!is.na(ld.list$key.snp_geno.formatted)){
+    this.chrom <- get_chrom_from_id(ld.list$key.snp)
+    this.pos <- get_bp_from_id(ld.list$key.snp)
+    
+    anno.sub <- annotation.table %>%
+      filter(.data$CHR == this.chrom) %>%
+      rowwise() %>%
+      mutate(dist.from.snp = get.gene.dist.from.snp(this.pos, .data$start, .data$end)) %>%
+      filter(.data$dist.from.snp <= window * 1000) 
+    
+    # for multiple (qtl.snps)  
+  } else {
+    this.chrom <- unique(get_chrom_from_id(ld.list$qtl.snps))
+    this.pos <- get_bp_from_id(ld.list$qtl.snps)
+    anno.sub <- annotation.table %>% 
+      filter(.data$CHR == this.chrom) %>%
+      rowwise() %>% 
+      mutate(dist.from.snp = min(get.gene.dist.from.snp(this.pos, .data$start, .data$end))) %>%
+      filter(.data$dist.from.snp <= window * 1000) 
+  }
+  
+  # ------------------------------------------------------------------------\
+  # do check if there are snps in the gwas results --------
+  # ------------------------------------------------------------------------\
+  
+  # check if there are no snps in gwas res within the window
+  if(!any(ld.list$table$marker.ID %in% gwas.res$marker.ID)){
+    warning("No SNPs found close to the provided tag snp or qtl.df SNPs. Maybe increase window or check gwas results table.")
+    
+    out <- list(gwas = gwas.sub,
+                anno = anno.sub,
+                window.snps = ld.list$table,
+                key.snp = ld.list$key.snp,
+                qtl.snps = ld.list$qtl.snps)
+    
+    return(out)
+  }
   
   # ------------------------------------------------------------------------\
   # make scores --------
@@ -232,38 +280,6 @@ make_panvar_tables <- function(gwas.res,
       left_join(scores.df, by = "marker.ID")
     gwas.sub <- gwas.sub %>% 
       left_join(scores.df, by = "marker.ID")
-  }
-  
-  # ------------------------------------------------------------------------\
-  # subset annotation --------
-  # ------------------------------------------------------------------------\
-  
-  # make sure annotation table chromosome column is numeric
-  if(!is.numeric(annotation.table$CHR)){
-    stop("Annotation table column 'CHR' must be numeric.")
-  }
-  
-  # filter anno to just window
-  # for one key snp
-  if(!is.na(ld.list$key.snp_geno.formatted)){
-    this.chrom <- get_chrom_from_id(ld.list$key.snp)
-    this.pos <- get_bp_from_id(ld.list$key.snp)
-    
-    anno.sub <- annotation.table %>%
-      filter(.data$CHR == this.chrom) %>%
-      rowwise() %>%
-      mutate(dist.from.snp = get.gene.dist.from.snp(this.pos, .data$start, .data$end)) %>%
-      filter(.data$dist.from.snp <= window * 1000) 
-    
-  # for multiple (qtl.snps)  
-  } else {
-    this.chrom <- unique(get_chrom_from_id(ld.list$qtl.snps))
-    this.pos <- get_bp_from_id(ld.list$qtl.snps)
-    anno.sub <- annotation.table %>% 
-      filter(.data$CHR == this.chrom) %>%
-      rowwise() %>% 
-      mutate(dist.from.snp = min(get.gene.dist.from.snp(this.pos, .data$start, .data$end))) %>%
-      filter(.data$dist.from.snp <= window * 1000) 
   }
   
 
