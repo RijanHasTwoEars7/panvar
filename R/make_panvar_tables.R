@@ -208,11 +208,13 @@ make_panvar_tables <- function(gwas.res,
   }
   
   # ------------------------------------------------------------------------\
-  # do check if there are snps in the gwas results --------
+  # check if there are snps in the gwas results --------
   # ------------------------------------------------------------------------\
   
   # check if there are no snps in gwas res within the window
-  if(!any(ld.list$table$marker.ID %in% gwas.res$marker.ID)){
+  ld.list.markers <- paste(ld.list$table$CHR, ld.list$table$POS, sep = "-")
+  
+  if(!any(ld.list.markers %in% gwas.res$marker.ID)){
     warning("No SNPs found close to the provided tag snp or qtl.df SNPs. Maybe increase window or check gwas results table.")
     
     out <- list(gwas = gwas.sub,
